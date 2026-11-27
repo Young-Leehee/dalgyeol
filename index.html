@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="달결">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#FBF7F4">
+<title>달결</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+:root{
+  --bg:#FBF7F4;--card:#fff;--ink:#3A2E39;--muted:#9A8C98;--line:#F1EBEE;
+  --period:#F2A0B8;--period-l:#F8CBD8;--period-t:#FCE8EE;
+  --pill:#7CC4B8;--pill-l:#BFE5DD;--pill-d:#3F8F83;--pill-t:#E3F4F0;
+  --lav:#DDD2F7;--violet:#9E86DE;
+  --gray:#DAD3D7;--gray-t:#F3F0F1;
+  --heart:#EC7F9E;--heart-t:#FDE8EF;
+  --spot:#F2B184;--spot-t:#FDEFE4;
+  --sun:#D9849E;--sat:#7F9CD6;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  background:var(--bg);color:var(--ink);max-width:480px;margin:0 auto;
+  padding:calc(16px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right))
+          calc(40px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
+  overscroll-behavior-y:none}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{font-size:23px;font-weight:800;letter-spacing:-.5px}.logo span{color:var(--period)}
+.logo small{font-size:12px;color:var(--muted);font-weight:600;margin-left:6px;letter-spacing:0}
+.icon-btn{border:0;background:var(--card);height:40px;min-width:40px;padding:0 12px;border-radius:12px;
+  font-size:16px;font-weight:700;color:var(--ink);box-shadow:0 2px 8px rgba(58,46,57,.07);cursor:pointer}
+.summary{background:linear-gradient(135deg,#FBE3EA,#EAE3FA);border-radius:20px;padding:18px;margin-bottom:14px}
+.summary .sub{font-size:13px;color:#6b5a68;font-weight:600}
+.summary .big{font-size:24px;font-weight:800;margin:4px 0 2px;letter-spacing:-.5px}
+.tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tag{background:rgba(255,255,255,.75);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:600}
+.pillbtn{margin-top:10px;width:100%;border:0;border-radius:14px;padding:13px;font-size:15px;font-weight:700;
+  background:var(--pill);color:#fff;cursor:pointer;font-family:inherit}
+.pillbtn.done{background:#fff;color:var(--pill-d)}
+.cal{background:var(--card);border-radius:20px;padding:14px 6px 12px;box-shadow:0 4px 18px rgba(58,46,57,.06);
+  overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.cal-head{display:flex;align-items:center;justify-content:space-between;padding:0 6px 12px}
+.title-btn{border:0;background:none;font-size:19px;font-weight:800;color:var(--ink);cursor:pointer;font-family:inherit;padding:4px 2px}
+.title-btn span{font-size:12px;color:var(--muted);margin-left:2px}
+.nav{display:flex;gap:6px}
+.nav button{border:0;background:var(--bg);border-radius:10px;height:34px;min-width:34px;padding:0 10px;
+  font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.week div{text-align:center;font-size:12px;color:var(--muted);padding-bottom:6px;font-weight:700}
+.week div:first-child{color:var(--sun)}.week div:last-child{color:var(--sat)}
+.cell{position:relative;height:82px;cursor:pointer;border-top:1px solid var(--line)}
+.cell.out{opacity:.35}
+.cell.sel{background:#FCF4F7}
+.num{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:27px;height:27px;line-height:27px;
+  text-align:center;border-radius:50%;font-size:14px;font-weight:600}
+.cell.sun .num{color:var(--sun)}.cell.sat .num{color:var(--sat)}
+.cell.ovu .num{box-shadow:0 0 0 2px var(--violet);color:var(--violet)}
+.cell.today .num{background:var(--ink);color:#fff!important}
+.pn{position:absolute;top:2px;right:1px;font-size:9px;min-width:15px;height:15px;line-height:13px;border-radius:8px;
+  border:1px solid var(--pill);color:var(--pill-d);text-align:center;font-weight:800;padding:0 2px;background:#fff}
+.pn.ok{background:var(--pill);border-color:var(--pill);color:#fff}
+.ic{position:absolute;top:35px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:2px;font-size:10px;line-height:1;color:var(--muted)}
+.ic svg{width:11px;height:11px}
+.mm{position:absolute;top:48px;left:2px;right:2px;font-size:9px;line-height:11px;color:#7d6e7b;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{position:absolute;left:0;right:0;height:5px}
+.bar.s{left:5px;border-top-left-radius:3px;border-bottom-left-radius:3px}
+.bar.e{right:5px;border-top-right-radius:3px;border-bottom-right-radius:3px}
+.b-period{bottom:17px;background:var(--period)}
+.b-pred{bottom:17px;background:repeating-linear-gradient(90deg,var(--period-l) 0 6px,transparent 6px 9px)}
+.b-fert{bottom:10px;background:var(--lav)}
+.b-brk{bottom:3px;background:var(--gray)}
+.anim-l{animation:inL .25s ease}.anim-r{animation:inR .25s ease}
+@keyframes inL{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes inR{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11px;color:var(--muted);padding:12px 8px 0}
+.legend>span{display:inline-flex;align-items:center;gap:4px}
+.legend i{display:inline-block;width:16px;height:5px;border-radius:3px}
+.legend svg{width:12px;height:12px}
+.sync{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;min-height:14px}
+.dim{position:fixed;inset:0;background:rgba(40,30,40,.3);display:none;z-index:10}
+.dim.on{display:block}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:100%;max-width:480px;max-height:85vh;
+  overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#fff;border-radius:22px 22px 0 0;
+  padding:22px calc(18px + env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+  z-index:11;transition:transform .25s}
+.sheet.on{transform:translate(-50%,0)}
+.sheet h3{font-size:19px;margin-bottom:8px}
+.ck{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.ck .box{width:24px;height:24px;border-radius:8px;border:2px solid #E6DCE1;display:grid;place-items:center;
+  color:#fff;font-size:14px;font-weight:800;flex:none;transition:.15s}
+.ck.on .box{background:var(--c);border-color:var(--c)}
+.ico{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none}
+.ico svg{width:18px;height:18px}
+.ck .lb{flex:1;font-size:15px;font-weight:700}
+.ck .lb small{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:3px}
+.ck.sub{padding-left:34px;background:#FDFBFC}
+.ck.sub .lb{font-size:14px}
+.ck.dis{cursor:default}.ck.dis .box{border-style:dashed}
+.links{display:flex;gap:14px;flex-wrap:wrap;padding:0 0 8px 76px;border-bottom:1px solid var(--line)}
+.lnk{border:0;background:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit;padding:4px 0}
+.sec{margin:16px 0}
+.t{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:8px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.b{border:1px solid #EADFE4;background:#fff;border-radius:12px;padding:9px 12px;font-size:14px;font-weight:600;
+  cursor:pointer;color:var(--ink);font-family:inherit}
+.b.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.b.full{width:100%;padding:12px}
+textarea,select,input[type=number]{border:1px solid #EADFE4;border-radius:12px;padding:10px;font:inherit;font-size:16px;color:var(--ink);background:#fff;-webkit-appearance:none;appearance:none}
+textarea{width:100%;min-height:64px;resize:vertical}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:14px}
+.row input[type=number]{width:90px}.row input[type=checkbox]{width:22px;height:22px;accent-color:var(--pill);flex:none}
+.note{font-size:12px;color:var(--muted);line-height:1.55}
+.ypick{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 14px}
+.ypick select{flex:1;text-align:center;font-size:17px;font-weight:700}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mgrid .b{padding:14px 0}
+/* 로그인 화면 */
+.auth{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;
+  padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
+.auth.hide{display:none}
+.auth-box{width:100%;max-width:340px;text-align:center}
+.auth-box .logo{font-size:34px;margin-bottom:8px}
+.auth-box input{width:100%;border:1px solid #EADFE4;border-radius:12px;padding:13px;font:inherit;font-size:16px;
+  margin-top:10px;background:#fff;color:var(--ink);-webkit-appearance:none;appearance:none}
+.auth-main{width:100%;margin-top:14px;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:700;
+  background:var(--ink);color:#fff;font-family:inherit;cursor:pointer}
+.auth-sub{width:100%;margin-top:8px;border:1px solid #EADFE4;border-radius:14px;padding:13px;font-size:15px;font-weight:600;
+  background:#fff;color:var(--ink);font-family:inherit;cursor:pointer}
+.auth-main:disabled,.auth-sub:disabled{opacity:.5}
+.auth-err{color:var(--heart);font-size:13px;min-height:18px;margin-top:12px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="auth" id="auth">
+  <div class="auth-box">
+    <div class="logo">달<span>결</span></div>
+    <p class="note" id="authLoading">불러오는 중…</p>
+    <div id="authForm" style="display:none">
+      <p class="note">기록을 계정에 안전하게 보관해요.<br>앱을 지우거나 기기를 바꿔도 로그인하면 그대로예요.</p>
+      <input type="email" id="aEmail" placeholder="이메일" autocomplete="username" autocapitalize="off">
+      <input type="password" id="aPw" placeholder="비밀번호 (6자 이상)" autocomplete="current-password">
+      <button class="auth-main" id="btnLogin">로그인</button>
+      <button class="auth-sub" id="btnSignup">처음이에요 · 계정 만들기</button>
+      <button class="lnk" id="btnReset" style="margin-top:10px">비밀번호를 잊었어요</button>
+      <p class="auth-err" id="authErr"></p>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">달<span>결</span><small>나의 주기 기록</small></div>
+  <button class="icon-btn" id="btnSet" aria-label="설정">⚙︎</button>
+</header>
+
+<section class="summary" id="summary"></section>
+
+<section class="cal" id="cal">
+  <div class="cal-head">
+    <button class="title-btn" id="title"></button>
+    <div class="nav">
+      <button id="prev" aria-label="이전 달">‹</button>
+      <button id="today">오늘</button>
+      <button id="next" aria-label="다음 달">›</button>
+    </div>
+  </div>
+  <div class="week"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+  <div class="grid" id="grid"></div>
+  <div class="legend" id="legend"></div>
+</section>
+<p class="sync" id="sync"></p>
+
+<div class="dim" id="dim"></div>
+<div class="sheet" id="sheet"></div>
+<input type="file" id="file" accept=".json,application/json" hidden>
+
+<script>
+const KEY='dalgyeol-v1',OLD_KEY='lunanote-v1';
+const $=s=>document.querySelector(s);
+const WD=['일','월','화','수','목','금','토'];
+const SYM=['복통','요통','두통','유방통','피로','기분 변화','여드름','붓기','분비물 변화','메스꺼움'];
+
+/* ---------- 아이콘 (SVG) ---------- */
+const ICON={
+  period:`<svg viewBox="0 0 24 24"><path d="M12 3.5C9.2 7.6 6.5 10.7 6.5 14.2a5.5 5.5 0 0 0 11 0c0-3.5-2.7-6.6-5.5-10.7z" fill="var(--period)"/></svg>`,
+  pill:(c1='var(--pill)',c2='var(--pill-l)')=>`<svg viewBox="0 0 24 24"><g transform="rotate(-45 12 12)">
+    <rect x="3.5" y="8.5" width="17" height="7" rx="3.5" fill="${c2}"/>
+    <path d="M12 8.5H7a3.5 3.5 0 0 0 0 7h5z" fill="${c1}"/></g></svg>`,
+  heart:(fill)=>`<svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.3a4.2 4.2 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"
+    fill="${fill?'var(--heart)':'#fff'}" stroke="var(--heart)" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+  spot:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.5" fill="var(--spot)"/></svg>`
+};
+
+/* ---------- 날짜 유틸 ---------- */
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return ymd(d)};
+const diff=(a,b)=>Math.round((parse(a)-parse(b))/86400000);
+const fmt=s=>{const d=parse(s);return `${d.getMonth()+1}/${d.getDate()}`};
+const fmtLong=s=>{const d=parse(s);return `${d.getMonth()+1}월 ${d.getDate()}일 (${WD[d.getDay()]})`};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const byStart=(a,b)=>a.start<b.start?-1:a.start>b.start?1:0;
+let TODAY=ymd(new Date());
+
+/* ---------- 저장 ---------- */
+function def(){return{periods:[],logs:{},pill:{starts:[],stops:[],taken:{}},
+  settings:{cycle:28,plen:5,showOvuOnPill:false,askProt:true},updatedAt:0}}
+function migrate(v){
+  if(v&&v.pill&&!v.pill.starts){
+    const o=v.pill;
+    v.pill={starts:o.start?[o.start]:[],stops:o.end?[addDays(o.end,1)]:[],taken:o.taken||{}};
+  }
+  return v;
+}
+function normalize(v){
+  const d=def();v=migrate(v);
+  return{...d,...v,pill:{...d.pill,...v.pill},settings:{...d.settings,...v.settings}};
+}
+function load(){
+  try{
+    let v=JSON.parse(localStorage.getItem(KEY));
+    if(!v)v=JSON.parse(localStorage.getItem(OLD_KEY)||'null');
+    if(v)return normalize(v);
+  }catch(e){}
+  return def();
+}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+// 사용자가 무언가 바꿀 때만 호출: 시간 기록 + 클라우드 저장
+function save(){S.updatedAt=Date.now();persist();if(window.cloudPush)window.cloudPush()}
+let S=load();persist();
+let view=new Date();view.setDate(1);
+let sel=null,sheetMode=null,pickY=view.getFullYear();
+
+/* 클라우드 연결용 */
+window.dg={
+  get:()=>S,
+  set:v=>{S=normalize(v);persist();if(sheetMode==='day'||sheetMode==='set')closeSheet();else render()},
+  reset:()=>{S=def();try{localStorage.removeItem(KEY);localStorage.removeItem(OLD_KEY)}catch(e){}render()}
+};
+
+/* ---------- 계산 ---------- */
+function stats(){
+  const ps=[...S.periods].sort(byStart);
+  const gaps=[];
+  for(let i=1;i<ps.length;i++){const g=diff(ps[i].start,ps[i-1].start);if(g>=15&&g<=60)gaps.push(g)}
+  const g6=gaps.slice(-6);
+  const cycle=g6.length?Math.round(g6.reduce((a,b)=>a+b,0)/g6.length):+S.settings.cycle;
+  const lens=ps.map(p=>diff(p.end,p.start)+1).filter(n=>n>=2).slice(-6);
+  const plen=lens.length?Math.round(lens.reduce((a,b)=>a+b,0)/lens.length):+S.settings.plen;
+  return{ps,cycle,plen,last:ps[ps.length-1]};
+}
+function pillInfo(d){
+  const st=S.pill.starts.filter(x=>x<=d).sort();
+  if(!st.length)return null;
+  const s=st[st.length-1];
+  if(S.pill.stops.some(x=>x>s&&x<=d))return null;
+  const i=diff(d,s)%28;
+  return i<21?{type:'on',n:i+1}:{type:'brk',n:i-20};
+}
+const hidePred=d=>!!pillInfo(d)&&!S.settings.showOvuOnPill;
+const heartFilled=lg=>!S.settings.askProt||!!lg.prot;
+
+function buildMarks(){
+  const m={},st=stats();
+  const put=(d,k,v)=>{(m[d]||(m[d]={}))[k]=v};
+  const range=(s,e,k)=>{for(let d=s;d<=e;d=addDays(d,1))put(d,k,{s:d===s,e:d===e})};
+  const ovu=ov=>{if(hidePred(ov))return;range(addDays(ov,-5),addDays(ov,1),'fert');put(ov,'ovu',true)};
+  st.ps.forEach((p,i)=>{range(p.start,p.end,'period');if(i>0)ovu(addDays(p.start,-14))});
+  const L=st.last;
+  if(L){
+    const ee=addDays(L.start,st.plen-1);
+    if(L.end<ee&&ee>=TODAY&&diff(TODAY,L.end)<=1)range(addDays(L.end,1),ee,'pred');
+    for(let i=1;i<=13;i++){
+      const P=addDays(L.start,st.cycle*i);
+      if(!hidePred(P))range(P,addDays(P,st.plen-1),'pred');
+      ovu(addDays(P,-14));
+    }
+  }
+  return m;
+}
+
+/* ---------- 생리 체크 토글 ---------- */
+function togglePeriod(d){
+  const ps=S.periods.sort(byStart);
+  const inP=ps.find(p=>d>=p.start&&d<=p.end);
+  if(inP){
+    if(inP.start===inP.end)S.periods=ps.filter(p=>p!==inP);
+    else if(d===inP.start)inP.start=addDays(d,1);
+    else inP.end=addDays(d,-1);
+    return;
+  }
+  const prev=[...ps].reverse().find(p=>p.end<d);
+  const next=ps.find(p=>p.start>d);
+  if(prev&&diff(d,prev.start)<=10)prev.end=d;
+  else if(next&&diff(next.start,d)<=3)next.start=d;
+  else S.periods.push({start:d,end:d});
+  const sorted=S.periods.sort(byStart),out=[];
+  sorted.forEach(p=>{
+    const l=out[out.length-1];
+    if(l&&p.start<=addDays(l.end,1)){if(p.end>l.end)l.end=p.end}
+    else out.push({...p});
+  });
+  S.periods=out;
+}
+
+/* ---------- 렌더 ---------- */
+function renderLegend(){
+  const hearts=S.settings.askProt
+    ?`<span>${ICON.heart(true)}성관계 (피임 O)</span><span>${ICON.heart(false)}성관계 (피임 X)</span>`
+    :`<span>${ICON.heart(true)}성관계</span>`;
+  $('#legend').innerHTML=`
+    <span><i style="background:var(--period)"></i>생리</span>
+    <span><i style="background:repeating-linear-gradient(90deg,var(--period-l) 0 4px,transparent 4px 6px)"></i>생리 예정</span>
+    <span><i style="background:var(--lav)"></i>가임기</span>
+    <span><b style="color:var(--violet)">◯</b>배란 예정</span>
+    <span><i style="background:var(--gray)"></i>휴약기</span>
+    <span><b style="color:var(--pill-d)">③</b>피임약 일차</span>
+    ${hearts}
+    <span>${ICON.spot}부정출혈</span>
+    <span>✎ 증상</span>`;
+}
+
+function render(dir){
+  const y=view.getFullYear(),mo=view.getMonth();
+  $('#title').innerHTML=`${y}년 ${mo+1}월<span>▾</span>`;
+  const marks=buildMarks();
+  const first=new Date(y,mo,1);
+  const days=new Date(y,mo+1,0).getDate();
+  const rows=Math.ceil((first.getDay()+days)/7);
+  const bar=(k,o)=>`<i class="bar b-${k}${o.s?' s':''}${o.e?' e':''}"></i>`;
+  let h='';
+  for(let i=0;i<rows*7;i++){
+    const dt=new Date(y,mo,1-first.getDay()+i);
+    const d=ymd(dt),mk=marks[d]||{},lg=S.logs[d]||{},pi=pillInfo(d);
+    let cls='cell';
+    if(dt.getMonth()!==mo)cls+=' out';
+    if(i%7===0)cls+=' sun';if(i%7===6)cls+=' sat';
+    if(d===TODAY)cls+=' today';if(mk.ovu)cls+=' ovu';if(d===sel)cls+=' sel';
+    let x=`<span class="num">${dt.getDate()}</span>`;
+    if(mk.period)x+=bar('period',mk.period);else if(mk.pred)x+=bar('pred',mk.pred);
+    if(mk.fert)x+=bar('fert',mk.fert);
+    if(pi&&pi.type==='brk'){
+      const nx=addDays(d,1);
+      x+=bar('brk',{s:pi.n===1,e:pi.n===7||S.pill.starts.includes(nx)||S.pill.stops.includes(nx)});
+    }
+    if(pi&&pi.type==='on')x+=`<span class="pn${S.pill.taken[d]?' ok':''}">${pi.n}</span>`;
+    let ic='';
+    if(lg.sex)ic+=ICON.heart(heartFilled(lg));
+    if(lg.spot)ic+=ICON.spot;
+    if(lg.sym&&lg.sym.length)ic+='<span>✎</span>';
+    if(ic)x+=`<div class="ic">${ic}</div>`;
+    if(lg.memo)x+=`<div class="mm">${esc(lg.memo.split('\n')[0])}</div>`;
+    h+=`<div class="${cls}" data-d="${d}">${x}</div>`;
+  }
+  const g=$('#grid');g.innerHTML=h;
+  if(dir){g.classList.remove('anim-l','anim-r');void g.offsetWidth;g.classList.add('anim-'+dir)}
+  renderSummary();renderLegend();
+}
+
+function renderSummary(){
+  const st=stats(),pi=pillInfo(TODAY);
+  const cur=S.periods.find(p=>TODAY>=p.start&&TODAY<=p.end);
+  let sub='',big='',tags=[],extra='';
+  if(cur){sub='오늘';big=`생리 ${diff(TODAY,cur.start)+1}일차`}
+  else if(pi){sub='경구피임약';big=pi.type==='on'?`복용 ${pi.n}일차`:`휴약기 ${pi.n}일차`}
+  else if(st.last){
+    const P=addDays(st.last.start,st.cycle),dd=diff(P,TODAY);
+    sub=`다음 생리 예정 ${fmtLong(P)}`;
+    big=dd>0?`D-${dd}`:dd===0?'오늘 예정일':`예정일 ${-dd}일 지남`;
+  }else{big='날짜를 눌러 기록을 시작해보세요'}
+  if(st.last){
+    if(!hidePred(TODAY)){
+      let ov=addDays(st.last.start,st.cycle-14);
+      while(ov<TODAY)ov=addDays(ov,st.cycle);
+      tags.push(`배란 예정 ${fmt(ov)}`);
+    }else tags.push('피임약 복용 중 · 배란 예측 숨김');
+    tags.push(`평균 주기 ${st.cycle}일`,`평균 기간 ${st.plen}일`);
+  }
+  if(pi){
+    if(pi.type==='on'){
+      const t=S.pill.taken[TODAY];
+      extra=`<div class="sub" style="margin-top:14px">피임약 ${pi.n}/21일차 · 휴약기까지 ${21-pi.n}일</div>
+      <button class="pillbtn${t?' done':''}" data-a="todaypill">${t?'✓ 오늘 복용 완료':'오늘 피임약 복용 체크'}</button>`;
+    }else extra=`<div class="sub" style="margin-top:14px">휴약기 ${pi.n}/7일차 · 새 팩 1일차 ${fmtLong(addDays(TODAY,8-pi.n))}</div>`;
+  }
+  $('#summary').innerHTML=`<div class="sub">${sub}</div><div class="big"${big.length>12?' style="font-size:18px"':''}>${big}</div>
+    ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}${extra}`;
+}
+
+/* ---------- 날짜 패널 ---------- */
+const ck=({on,c,a,icon,tint,label,small,cls=''})=>
+  `<div class="ck ${on?'on':''} ${cls}" style="--c:${c}" ${a?`data-a="${a}"`:''}>
+    <span class="box">${on?'✓':''}</span>
+    ${icon?`<span class="ico" style="background:${tint}">${icon}</span>`:''}
+    <span class="lb">${label}${small?`<small>${small}</small>`:''}</span></div>`;
+const lnk=(a,t)=>`<button class="lnk" data-a="${a}">${t}</button>`;
+
+function openDay(d){
+  sel=d;sheetMode='day';render();
+  const lg=S.logs[d]||{},pi=pillInfo(d);
+  const inP=S.periods.find(p=>d>=p.start&&d<=p.end);
+  const isStart=S.pill.starts.includes(d),isStop=S.pill.stops.includes(d);
+  let h=`<h3>${fmtLong(d)}</h3>`;
+
+  h+=ck({on:!!inP,c:'var(--period)',a:'period',icon:ICON.period,tint:'var(--period-t)',label:'생리',
+    small:inP?`${diff(d,inP.start)+1}일차 · ${fmt(inP.start)} ~ ${fmt(inP.end)} (${diff(inP.end,inP.start)+1}일) · 해제하면 전날이 종료일`
+             :'시작일 체크 → 종료일 체크하면 사이가 채워져요'});
+
+  if(pi&&pi.type==='on'){
+    h+=ck({on:!!S.pill.taken[d],c:'var(--pill)',a:'pill',icon:ICON.pill(),tint:'var(--pill-t)',
+      label:`경구피임약 ${pi.n}일차`,small:`21일 중 ${pi.n}일째 · 체크하면 복용 완료`});
+    h+=`<div class="links">${isStart?lnk('unstart','1일차 지정 취소'):lnk('start','이 날을 새 팩 1일차로')}${lnk('stop','이 날부터 복용 중단')}</div>`;
+  }else if(pi&&pi.type==='brk'){
+    h+=ck({on:false,c:'var(--gray)',a:'',icon:ICON.pill('var(--gray)','#ECE7EA'),tint:'var(--gray-t)',
+      label:`휴약기 ${pi.n}/7일차`,small:`${fmtLong(addDays(d,8-pi.n))}이 새 팩 1일차`,cls:'dis'});
+    h+=`<div class="links">${lnk('start','이 날을 새 팩 1일차로 (일찍 시작)')}${lnk('stop','이 날부터 복용 중단')}</div>`;
+  }else if(isStop){
+    h+=ck({on:false,c:'var(--gray)',a:'',icon:ICON.pill('var(--gray)','#ECE7EA'),tint:'var(--gray-t)',
+      label:'피임약 복용 중단일',small:'이 날부터 복용하지 않음',cls:'dis'});
+    h+=`<div class="links">${lnk('unstop','중단 취소')}</div>`;
+  }else{
+    h+=ck({on:false,c:'var(--pill)',a:'start',icon:ICON.pill(),tint:'var(--pill-t)',
+      label:'경구피임약 1일차 시작',small:'체크하면 21일 복용 + 7일 휴약이 반복돼요'});
+  }
+
+  h+=ck({on:!!lg.sex,c:'var(--heart)',a:'tg|sex',icon:ICON.heart(lg.sex?heartFilled(lg):true),tint:'var(--heart-t)',
+    label:'성관계',small:S.settings.askProt?'채운 하트: 피임 O · 빈 하트: 피임 X':'체크하면 캘린더에 하트로 표시돼요'});
+  if(lg.sex&&S.settings.askProt){
+    h+=ck({on:!!lg.prot,c:'var(--heart)',a:'tg|prot',icon:ICON.heart(!!lg.prot),tint:'var(--heart-t)',
+      label:'피임도구 사용',small:lg.prot?'캘린더에 채운 하트로 표시':'캘린더에 빈 하트로 표시',cls:'sub'});
+  }
+
+  h+=ck({on:!!lg.spot,c:'var(--spot)',a:'tg|spot',icon:ICON.spot,tint:'var(--spot-t)',label:'부정출혈'});
+
+  h+=`<div class="sec"><span class="t">증상</span><div class="btns">
+    ${SYM.map(s=>`<button class="b ${(lg.sym||[]).includes(s)?'on':''}" data-a="sym|${s}">${s}</button>`).join('')}
+  </div></div>
+  <div class="sec"><span class="t">메모 · 첫 줄 앞부분이 캘린더에 표시돼요</span>
+    <textarea id="memo" maxlength="300" placeholder="예) 병원 예약, 컨디션 안 좋음">${esc(lg.memo)}</textarea></div>
+  <button class="b full" data-a="close">닫기</button>`;
+  showSheet(h);
+}
+
+/* ---------- 연도/월 선택 ---------- */
+function openPicker(){sheetMode='pick';pickY=view.getFullYear();drawPicker()}
+function drawPicker(){
+  let opts='';for(let y=pickY-15;y<=pickY+15;y++)opts+=`<option value="${y}" ${y===pickY?'selected':''}>${y}년</option>`;
+  const cy=view.getFullYear(),cm=view.getMonth();
+  showSheet(`<h3>연도 · 월 선택</h3>
+  <div class="ypick"><button class="b" data-a="py|-1">‹</button><select id="pickY">${opts}</select><button class="b" data-a="py|1">›</button></div>
+  <div class="mgrid">${Array.from({length:12},(_,i)=>
+    `<button class="b ${pickY===cy&&i===cm?'on':''}" data-a="pm|${i}">${i+1}월</button>`).join('')}</div>
+  <div class="btns" style="margin-top:14px"><button class="b full" data-a="pm|now">이번 달로 이동</button></div>`);
+}
+
+/* ---------- 설정 ---------- */
+function openSettings(){
+  sheetMode='set';
+  const s=S.settings;
+  const account=window.cloudUser
+    ?`<p class="note" style="margin-bottom:8px">${esc(window.cloudUser)} 계정에 저장 중<br>${esc(window.syncText||'')}</p>
+      <div class="btns"><button class="b" data-a="logout">로그아웃</button></div>`
+    :`<p class="note">클라우드가 연결되지 않아 이 기기에만 저장 중이에요.</p>`;
+  showSheet(`<h3>설정</h3>
+  <div class="sec"><span class="t">계정 · 동기화</span>${account}</div>
+  <div class="sec"><span class="t">기본 주기 (기록이 쌓이면 평균값을 자동 사용)</span>
+    <div class="row"><span>생리 주기</span><input type="number" inputmode="numeric" id="s-cycle" min="20" max="45" value="${s.cycle}"></div>
+    <div class="row"><span>생리 기간</span><input type="number" inputmode="numeric" id="s-plen" min="2" max="10" value="${s.plen}"></div></div>
+  <div class="sec"><span class="t">기록 항목</span>
+    <div class="row"><span>성관계 체크 시 피임도구 사용 여부도 체크<br><small class="note">끄면 모든 성관계가 채운 하트로 표시돼요</small></span><input type="checkbox" id="s-prot" ${s.askProt?'checked':''}></div></div>
+  <div class="sec"><span class="t">경구피임약 (21일 복용 + 7일 휴약)</span>
+    <div class="row"><span>복용 중에도 배란·생리 예측 표시</span><input type="checkbox" id="s-ovu" ${s.showOvuOnPill?'checked':''}></div>
+    <p class="note">1일차는 캘린더에서 날짜를 눌러 지정해요. 복합 경구피임약은 배란을 억제하므로 기본적으로 복용 기간에는 배란·가임기 예측을 숨깁니다. 복용을 놓쳤을 때의 대처법은 제품 설명서나 약사에게 확인하세요.</p></div>
+  <div class="sec"><span class="t">데이터</span><div class="btns">
+    <button class="b" data-a="csv">기록 다운로드 (CSV)</button>
+    <button class="b" data-a="json">백업 파일 (JSON)</button>
+    <button class="b" data-a="imp">백업 불러오기</button>
+    <button class="b" data-a="reset" style="color:var(--heart)">전체 삭제</button></div>
+    <p class="note" style="margin-top:8px">아이폰에서는 공유 창이 열리면 "파일에 저장"을 선택하세요.</p></div>
+  <button class="b full" data-a="close">닫기</button>`);
+}
+
+function showSheet(h){$('#sheet').innerHTML=h;$('#sheet').classList.add('on');$('#dim').classList.add('on')}
+function closeSheet(){$('#sheet').classList.remove('on');$('#dim').classList.remove('on');sel=null;sheetMode=null;render()}
+
+/* ---------- 동작 ---------- */
+function setLog(d,k,v){
+  const l=S.logs[d]||(S.logs[d]={});
+  if(v===false||v===''||v==null||(Array.isArray(v)&&!v.length))delete l[k];else l[k]=v;
+  if(!Object.keys(l).length)delete S.logs[d];
+  save();
+}
+const uniqPush=(arr,v)=>{if(!arr.includes(v))arr.push(v)};
+function act(a,v){
+  const d=sel,P=S.pill;
+  switch(a){
+    case 'close':return closeSheet();
+    case 'py':pickY+=+v;return drawPicker();
+    case 'pm':{
+      const n=new Date();
+      view=v==='now'?new Date(n.getFullYear(),n.getMonth(),1):new Date(pickY,+v,1);
+      return closeSheet();}
+    case 'todaypill':
+      if(P.taken[TODAY])delete P.taken[TODAY];else P.taken[TODAY]=true;
+      save();render();if(sheetMode==='day')openDay(sel);return;
+    case 'pill':if(P.taken[d])delete P.taken[d];else P.taken[d]=true;break;
+    case 'start':uniqPush(P.starts,d);P.stops=P.stops.filter(x=>x!==d);P.taken[d]=true;break;
+    case 'unstart':P.starts=P.starts.filter(x=>x!==d);break;
+    case 'stop':uniqPush(P.stops,d);delete P.taken[d];break;
+    case 'unstop':P.stops=P.stops.filter(x=>x!==d);break;
+    case 'period':togglePeriod(d);break;
+    case 'tg':{
+      const cur=!(S.logs[d]||{})[v];setLog(d,v,cur);
+      if(v==='sex'&&!cur)setLog(d,'prot',false);break;}
+    case 'sym':{
+      const arr=((S.logs[d]||{}).sym||[]).slice(),i=arr.indexOf(v);
+      i<0?arr.push(v):arr.splice(i,1);setLog(d,'sym',arr);break;}
+    case 'csv':return saveFile(`dalgyeol_${TODAY}.csv`,toCSV(),'text/csv');
+    case 'json':return saveFile(`dalgyeol_backup_${TODAY}.json`,JSON.stringify(S,null,2),'application/json');
+    case 'imp':return $('#file').click();
+    case 'logout':
+      if(confirm('로그아웃할까요?\n기록은 계정에 안전하게 남아 있어요.')){closeSheet();if(window.cloudLogout)window.cloudLogout()}
+      return;
+    case 'reset':
+      if(confirm('모든 기록을 삭제할까요? 계정에 저장된 기록도 함께 지워지고 되돌릴 수 없어요.')&&confirm('정말 삭제할까요?')){S=def();save();closeSheet()}
+      return;
+  }
+  save();render();if(sheetMode==='day')openDay(d);
+}
+
+/* ---------- 내보내기 ---------- */
+function toCSV(){
+  const dates=new Set([...Object.keys(S.logs),...Object.keys(S.pill.taken),...S.pill.starts,...S.pill.stops]);
+  S.periods.forEach(p=>{for(let d=p.start;d<=p.end;d=addDays(d,1))dates.add(d)});
+  const q=s=>`"${String(s??'').replace(/"/g,'""')}"`;
+  const rows=[['날짜','요일','생리','피임약','복용 체크','성관계','피임도구','부정출혈','증상','메모']];
+  [...dates].sort().forEach(d=>{
+    const l=S.logs[d]||{},p=S.periods.find(p=>d>=p.start&&d<=p.end),pi=pillInfo(d);
+    const pillTxt=pi?(pi.type==='on'?`${pi.n}일차`:`휴약 ${pi.n}일차`):(S.pill.stops.includes(d)?'복용 중단':'');
+    rows.push([d,WD[parse(d).getDay()],p?`${diff(d,p.start)+1}일차`:'',pillTxt,S.pill.taken[d]?'O':'',
+      l.sex?'O':'',l.sex?(l.prot?'O':'X'):'',l.spot?'O':'',(l.sym||[]).join(' / '),l.memo||'']);
+  });
+  rows.push([],['[생리 기간 목록]'],['시작일','종료일','기간(일)','이전 시작일과 간격(일)']);
+  const ps=stats().ps;
+  ps.forEach((p,i)=>rows.push([p.start,p.end,diff(p.end,p.start)+1,i?diff(p.start,ps[i-1].start):'']));
+  return '\uFEFF'+rows.map(r=>r.map(q).join(',')).join('\r\n');
+}
+async function saveFile(name,text,type){
+  try{
+    const file=new File([text],name,{type});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:name});
+      return;
+    }
+  }catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:type+';charset=utf-8'}));a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+
+/* ---------- 이벤트 ---------- */
+function move(n){view=new Date(view.getFullYear(),view.getMonth()+n,1);render(n>0?'l':'r')}
+$('#prev').onclick=()=>move(-1);
+$('#next').onclick=()=>move(1);
+$('#today').onclick=()=>{view=new Date();view.setDate(1);render('l')};
+$('#title').onclick=openPicker;
+$('#btnSet').onclick=openSettings;
+$('#dim').onclick=closeSheet;
+$('#grid').onclick=e=>{const c=e.target.closest('.cell');if(c)openDay(c.dataset.d)};
+$('#summary').onclick=e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a)};
+$('#sheet').onclick=e=>{
+  const b=e.target.closest('[data-a]');if(!b||!b.dataset.a)return;
+  const s=b.dataset.a,i=s.indexOf('|');
+  i<0?act(s):act(s.slice(0,i),s.slice(i+1));
+};
+$('#sheet').addEventListener('input',e=>{if(e.target.id==='memo'){setLog(sel,'memo',e.target.value.trim()?e.target.value:'');render()}});
+$('#sheet').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='pickY'){pickY=+t.value;return drawPicker()}
+  if(t.id==='s-cycle')S.settings.cycle=Math.min(45,Math.max(20,+t.value||28));
+  else if(t.id==='s-plen')S.settings.plen=Math.min(10,Math.max(2,+t.value||5));
+  else if(t.id==='s-ovu')S.settings.showOvuOnPill=t.checked;
+  else if(t.id==='s-prot')S.settings.askProt=t.checked;
+  else return;
+  save();render();
+});
+$('#file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const v=JSON.parse(r.result);
+    if(!v.periods||!v.logs)throw 0;
+    if(confirm('현재 기록을 백업 파일 내용으로 바꿀까요?')){S=normalize(v);save();closeSheet()}
+  }catch(err){alert('올바른 달결 백업 파일이 아니에요.')}};
+  r.readAsText(f);e.target.value='';
+};
+const cal=$('#cal');let tx=null,ty=0,lastWheel=0;
+cal.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+cal.addEventListener('touchend',e=>{
+  if(tx==null)return;
+  const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3)move(dx<0?1:-1);
+  tx=null;
+},{passive:true});
+cal.addEventListener('wheel',e=>{
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>25&&Date.now()-lastWheel>450){
+    lastWheel=Date.now();move(e.deltaX>0?1:-1);
+  }
+},{passive:true});
+document.addEventListener('keydown',e=>{
+  if(sheetMode||!$('#auth').classList.contains('hide'))return;
+  if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1);
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){const t=ymd(new Date());if(t!==TODAY){TODAY=t;render()}}
+});
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+// 연결이 오래 걸리면 이 기기 기록으로 계속할 수 있게
+setTimeout(()=>{
+  if(!window.cloudReady&&!$('#auth').classList.contains('hide')){
+    $('#authLoading').innerHTML='연결이 원활하지 않아요.<br><button class="lnk" onclick="document.getElementById(\'auth\').classList.add(\'hide\')">이 기기 기록으로 계속하기</button>';
+  }
+},10000);
+
+render();
+</script>
+
+<!-- ===== 클라우드 저장 (Firebase) ===== -->
+<script type="module">
+// ▼ Firebase 값을 여기에 붙여넣으세요 (설정 6단계에서 복사한 내용)
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+// ▲ 여기까지
+
+const q=s=>document.querySelector(s);
+const setSync=t=>{window.syncText=t;const el=q('#sync');if(el)el.textContent=t};
+const nowT=()=>{const d=new Date();return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`};
+const hideAuth=()=>q('#auth').classList.add('hide');
+
+if(!firebaseConfig.apiKey){
+  window.cloudReady=true;hideAuth();setSync('이 기기에만 저장 중');
+}else{
+  try{
+    const V='10.12.2';
+    const {initializeApp}=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+    const A=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+    const F=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+    const app=initializeApp(firebaseConfig);
+    const auth=A.getAuth(app);auth.languageCode='ko';
+    const db=F.getFirestore(app);
+
+    let ref=null,unsub=null,timer=null;
+    const push=()=>{
+      if(!ref)return;
+      clearTimeout(timer);setSync('저장 중…');
+      timer=setTimeout(async()=>{
+        const s=dg.get();
+        try{await F.setDoc(ref,{data:JSON.stringify(s),updatedAt:s.updatedAt||0});setSync(`계정에 저장됨 · ${nowT()}`)}
+        catch(e){setSync('저장 실패 · 연결되면 다시 시도해요')}
+      },700);
+    };
+    window.cloudPush=push;
+    window.cloudLogout=async()=>{await A.signOut(auth);dg.reset();setSync('')};
+
+    A.onAuthStateChanged(auth,user=>{
+      window.cloudReady=true;
+      if(unsub){unsub();unsub=null}
+      if(!user){
+        ref=null;window.cloudUser='';
+        q('#auth').classList.remove('hide');q('#authLoading').style.display='none';q('#authForm').style.display='block';
+        return;
+      }
+      window.cloudUser=user.email;hideAuth();
+      ref=F.doc(db,'users',user.uid);
+      setSync('동기화 중…');
+      unsub=F.onSnapshot(ref,snap=>{
+        if(snap.metadata.hasPendingWrites)return;
+        const local=dg.get();
+        if(!snap.exists()){push();return}
+        const remote=snap.data();
+        if((remote.updatedAt||0)>(local.updatedAt||0)){try{dg.set(JSON.parse(remote.data))}catch(e){}}
+        else if((local.updatedAt||0)>(remote.updatedAt||0)){push();return}
+        setSync(`동기화됨 · ${nowT()}`);
+      },err=>setSync('동기화 오류: '+err.code));
+    });
+
+    const MSG={
+      'auth/invalid-credential':'이메일 또는 비밀번호가 맞지 않아요.',
+      'auth/wrong-password':'이메일 또는 비밀번호가 맞지 않아요.',
+      'auth/user-not-found':'가입되지 않은 이메일이에요.',
+      'auth/email-already-in-use':'이미 가입된 이메일이에요. 로그인해주세요.',
+      'auth/weak-password':'비밀번호는 6자 이상이어야 해요.',
+      'auth/invalid-email':'이메일 형식을 확인해주세요.',
+      'auth/missing-password':'비밀번호를 입력해주세요.',
+      'auth/too-many-requests':'시도가 너무 많아요. 잠시 후 다시 해주세요.',
+      'auth/network-request-failed':'인터넷 연결을 확인해주세요.'
+    };
+    const err=t=>{q('#authErr').textContent=t};
+    const busy=b=>['#btnLogin','#btnSignup'].forEach(s=>q(s).disabled=b);
+    const run=async fn=>{
+      const e=q('#aEmail').value.trim(),p=q('#aPw').value;
+      if(!e||!p)return err('이메일과 비밀번호를 입력해주세요.');
+      err('');busy(true);
+      try{await fn(auth,e,p)}catch(x){err(MSG[x.code]||`문제가 생겼어요 (${x.code})`)}
+      finally{busy(false)}
+    };
+    q('#btnLogin').onclick=()=>run(A.signInWithEmailAndPassword);
+    q('#btnSignup').onclick=()=>run(A.createUserWithEmailAndPassword);
+    q('#aPw').addEventListener('keydown',e=>{if(e.key==='Enter')q('#btnLogin').click()});
+    q('#btnReset').onclick=async()=>{
+      const e=q('#aEmail').value.trim();
+      if(!e)return err('위에 이메일을 먼저 입력해주세요.');
+      try{await A.sendPasswordResetEmail(auth,e);err('재설정 메일을 보냈어요. 메일함(스팸함 포함)을 확인해주세요.')}
+      catch(x){err(MSG[x.code]||`문제가 생겼어요 (${x.code})`)}
+    };
+  }catch(e){
+    window.cloudReady=true;hideAuth();setSync('클라우드 연결 실패 · 이 기기에만 저장 중');
+  }
+}
+</script>
+</body>
+</html>
