@@ -16,6 +16,7 @@
 <style>
 :root{
   --bg:#FBF7F4;--card:#fff;--ink:#3A2E39;--muted:#9A8C98;--line:#F1EBEE;
+  --gyeol:#6B84A3;
   --period:#F2A0B8;--period-l:#F8CBD8;--period-t:#FCE8EE;
   --pill:#7CC4B8;--pill-l:#BFE5DD;--pill-d:#3F8F83;--pill-t:#E3F4F0;
   --lav:#DDD2F7;--violet:#9E86DE;
@@ -23,28 +24,21 @@
   --heart:#EC7F9E;--heart-t:#FDE8EF;
   --spot:#F2B184;--spot-t:#FDEFE4;
   --sun:#D9849E;--sat:#7F9CD6;
+  --cellH:92px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   background:var(--bg);color:var(--ink);max-width:480px;margin:0 auto;
   padding:calc(16px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right))
-          calc(40px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
+          calc(20px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
   overscroll-behavior-y:none}
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.logo{font-size:23px;font-weight:800;letter-spacing:-.5px}.logo span{color:var(--period)}
+.logo{font-size:23px;font-weight:800;letter-spacing:-.5px}.logo span{color:var(--gyeol)}
 .logo small{font-size:12px;color:var(--muted);font-weight:600;margin-left:6px;letter-spacing:0}
 .icon-btn{border:0;background:var(--card);height:40px;min-width:40px;padding:0 12px;border-radius:12px;
   font-size:16px;font-weight:700;color:var(--ink);box-shadow:0 2px 8px rgba(58,46,57,.07);cursor:pointer}
-.summary{background:linear-gradient(135deg,#FBE3EA,#EAE3FA);border-radius:20px;padding:18px;margin-bottom:14px}
-.summary .sub{font-size:13px;color:#6b5a68;font-weight:600}
-.summary .big{font-size:24px;font-weight:800;margin:4px 0 2px;letter-spacing:-.5px}
-.tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-.tag{background:rgba(255,255,255,.75);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:600}
-.pillbtn{margin-top:10px;width:100%;border:0;border-radius:14px;padding:13px;font-size:15px;font-weight:700;
-  background:var(--pill);color:#fff;cursor:pointer;font-family:inherit}
-.pillbtn.done{background:#fff;color:var(--pill-d)}
-.cal{background:var(--card);border-radius:20px;padding:14px 6px 12px;box-shadow:0 4px 18px rgba(58,46,57,.06);
+.cal{background:var(--card);border-radius:20px;padding:14px 6px 8px;box-shadow:0 4px 18px rgba(58,46,57,.06);
   overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .cal-head{display:flex;align-items:center;justify-content:space-between;padding:0 6px 12px}
 .title-btn{border:0;background:none;font-size:19px;font-weight:800;color:var(--ink);cursor:pointer;font-family:inherit;padding:4px 2px}
@@ -55,36 +49,33 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .week,.grid{display:grid;grid-template-columns:repeat(7,1fr)}
 .week div{text-align:center;font-size:12px;color:var(--muted);padding-bottom:6px;font-weight:700}
 .week div:first-child{color:var(--sun)}.week div:last-child{color:var(--sat)}
-.cell{position:relative;height:82px;cursor:pointer;border-top:1px solid var(--line)}
+.cell{position:relative;height:var(--cellH);cursor:pointer;border-top:1px solid var(--line)}
 .cell.out{opacity:.35}
 .cell.sel{background:#FCF4F7}
-.num{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:27px;height:27px;line-height:27px;
+.num{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:26px;height:26px;line-height:26px;
   text-align:center;border-radius:50%;font-size:14px;font-weight:600}
 .cell.sun .num{color:var(--sun)}.cell.sat .num{color:var(--sat)}
 .cell.ovu .num{box-shadow:0 0 0 2px var(--violet);color:var(--violet)}
 .cell.today .num{background:var(--ink);color:#fff!important}
 .pn{position:absolute;top:2px;right:1px;font-size:9px;min-width:15px;height:15px;line-height:13px;border-radius:8px;
-  border:1px solid var(--pill);color:var(--pill-d);text-align:center;font-weight:800;padding:0 2px;background:#fff}
+  border:1px solid var(--pill);color:var(--pill-d);text-align:center;font-weight:800;padding:0 2px;background:#fff;z-index:2}
 .pn.ok{background:var(--pill);border-color:var(--pill);color:#fff}
-.ic{position:absolute;top:35px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:2px;font-size:10px;line-height:1;color:var(--muted)}
+.ic{position:absolute;top:33px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:2px;font-size:10px;line-height:1;color:var(--muted)}
 .ic svg{width:11px;height:11px}
-.mm{position:absolute;top:48px;left:2px;right:2px;font-size:9px;line-height:11px;color:#7d6e7b;text-align:center;
+.mm{position:absolute;top:45px;left:2px;right:2px;font-size:9px;line-height:11px;color:#7d6e7b;text-align:center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar{position:absolute;left:0;right:0;height:5px}
-.bar.s{left:5px;border-top-left-radius:3px;border-bottom-left-radius:3px}
-.bar.e{right:5px;border-top-right-radius:3px;border-bottom-right-radius:3px}
-.b-period{bottom:17px;background:var(--period)}
-.b-pred{bottom:17px;background:repeating-linear-gradient(90deg,var(--period-l) 0 6px,transparent 6px 9px)}
-.b-fert{bottom:10px;background:var(--lav)}
-.b-brk{bottom:3px;background:var(--gray)}
+.bar{position:absolute;left:0;right:0;height:12px;font-size:9px;line-height:12px;font-weight:700;letter-spacing:-.3px;
+  white-space:nowrap;padding-left:4px;z-index:1}
+.bar.s{left:4px;border-top-left-radius:6px;border-bottom-left-radius:6px}
+.bar.e{right:4px;border-top-right-radius:6px;border-bottom-right-radius:6px}
+.b-period{bottom:28px;background:var(--period);color:#8A3D55}
+.b-pred{bottom:28px;background:#FBE3EA;color:#C0728A}
+.b-fert{bottom:15px;background:var(--lav);color:#5D4B98}
+.b-brk{bottom:2px;background:var(--gray);color:#6E656A}
 .anim-l{animation:inL .25s ease}.anim-r{animation:inR .25s ease}
 @keyframes inL{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 @keyframes inR{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
-.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11px;color:var(--muted);padding:12px 8px 0}
-.legend>span{display:inline-flex;align-items:center;gap:4px}
-.legend i{display:inline-block;width:16px;height:5px;border-radius:3px}
-.legend svg{width:12px;height:12px}
-.sync{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;min-height:14px}
+.sync{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;min-height:14px}
 .dim{position:fixed;inset:0;background:rgba(40,30,40,.3);display:none;z-index:10}
 .dim.on{display:block}
 .sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:100%;max-width:480px;max-height:85vh;
@@ -122,7 +113,6 @@ textarea{width:100%;min-height:64px;resize:vertical}
 .ypick select{flex:1;text-align:center;font-size:17px;font-weight:700}
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .mgrid .b{padding:14px 0}
-/* 로그인 화면 */
 .auth{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;
   padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
 .auth.hide{display:none}
@@ -161,8 +151,6 @@ textarea{width:100%;min-height:64px;resize:vertical}
   <button class="icon-btn" id="btnSet" aria-label="설정">⚙︎</button>
 </header>
 
-<section class="summary" id="summary"></section>
-
 <section class="cal" id="cal">
   <div class="cal-head">
     <button class="title-btn" id="title"></button>
@@ -174,7 +162,6 @@ textarea{width:100%;min-height:64px;resize:vertical}
   </div>
   <div class="week"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
   <div class="grid" id="grid"></div>
-  <div class="legend" id="legend"></div>
 </section>
 <p class="sync" id="sync"></p>
 
@@ -234,13 +221,11 @@ function load(){
   return def();
 }
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-// 사용자가 무언가 바꿀 때만 호출: 시간 기록 + 클라우드 저장
 function save(){S.updatedAt=Date.now();persist();if(window.cloudPush)window.cloudPush()}
 let S=load();persist();
 let view=new Date();view.setDate(1);
-let sel=null,sheetMode=null,pickY=view.getFullYear();
+let sel=null,sheetMode=null,pickY=view.getFullYear(),curRows=6;
 
-/* 클라우드 연결용 */
 window.dg={
   get:()=>S,
   set:v=>{S=normalize(v);persist();if(sheetMode==='day'||sheetMode==='set')closeSheet();else render()},
@@ -272,16 +257,20 @@ const heartFilled=lg=>!S.settings.askProt||!!lg.prot;
 function buildMarks(){
   const m={},st=stats();
   const put=(d,k,v)=>{(m[d]||(m[d]={}))[k]=v};
-  const range=(s,e,k)=>{for(let d=s;d<=e;d=addDays(d,1))put(d,k,{s:d===s,e:d===e})};
-  const ovu=ov=>{if(hidePred(ov))return;range(addDays(ov,-5),addDays(ov,1),'fert');put(ov,'ovu',true)};
-  st.ps.forEach((p,i)=>{range(p.start,p.end,'period');if(i>0)ovu(addDays(p.start,-14))});
+  const range=(s,e,k,label='')=>{for(let d=s;d<=e;d=addDays(d,1))put(d,k,{s:d===s,e:d===e,label:d===s?label:''})};
+  const ovu=ov=>{
+    if(hidePred(ov))return;
+    range(addDays(ov,-5),addDays(ov,1),'fert','가임기');
+    m[ov].fert.label='배란';put(ov,'ovu',true);
+  };
+  st.ps.forEach((p,i)=>{range(p.start,p.end,'period','생리');if(i>0)ovu(addDays(p.start,-14))});
   const L=st.last;
   if(L){
     const ee=addDays(L.start,st.plen-1);
-    if(L.end<ee&&ee>=TODAY&&diff(TODAY,L.end)<=1)range(addDays(L.end,1),ee,'pred');
+    if(L.end<ee&&ee>=TODAY&&diff(TODAY,L.end)<=1)range(addDays(L.end,1),ee,'pred','');
     for(let i=1;i<=13;i++){
       const P=addDays(L.start,st.cycle*i);
-      if(!hidePred(P))range(P,addDays(P,st.plen-1),'pred');
+      if(!hidePred(P))range(P,addDays(P,st.plen-1),'pred','예정');
       ovu(addDays(P,-14));
     }
   }
@@ -312,23 +301,17 @@ function togglePeriod(d){
   S.periods=out;
 }
 
-/* ---------- 렌더 ---------- */
-function renderLegend(){
-  const hearts=S.settings.askProt
-    ?`<span>${ICON.heart(true)}성관계 (피임 O)</span><span>${ICON.heart(false)}성관계 (피임 X)</span>`
-    :`<span>${ICON.heart(true)}성관계</span>`;
-  $('#legend').innerHTML=`
-    <span><i style="background:var(--period)"></i>생리</span>
-    <span><i style="background:repeating-linear-gradient(90deg,var(--period-l) 0 4px,transparent 4px 6px)"></i>생리 예정</span>
-    <span><i style="background:var(--lav)"></i>가임기</span>
-    <span><b style="color:var(--violet)">◯</b>배란 예정</span>
-    <span><i style="background:var(--gray)"></i>휴약기</span>
-    <span><b style="color:var(--pill-d)">③</b>피임약 일차</span>
-    ${hearts}
-    <span>${ICON.spot}부정출혈</span>
-    <span>✎ 증상</span>`;
+/* ---------- 캘린더 크기: 화면 높이에 맞춤 ---------- */
+function fitCells(){
+  const g=$('#grid');
+  const top=g.getBoundingClientRect().top+window.scrollY;
+  const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||20;
+  const reserve=8+24+padB;   // 캘린더 아래 여백 + 동기화 문구 + 하단 안전영역
+  const h=Math.floor((window.innerHeight-top-reserve)/curRows);
+  document.documentElement.style.setProperty('--cellH',Math.max(92,Math.min(h,150))+'px');
 }
 
+/* ---------- 렌더 ---------- */
 function render(dir){
   const y=view.getFullYear(),mo=view.getMonth();
   $('#title').innerHTML=`${y}년 ${mo+1}월<span>▾</span>`;
@@ -336,7 +319,8 @@ function render(dir){
   const first=new Date(y,mo,1);
   const days=new Date(y,mo+1,0).getDate();
   const rows=Math.ceil((first.getDay()+days)/7);
-  const bar=(k,o)=>`<i class="bar b-${k}${o.s?' s':''}${o.e?' e':''}"></i>`;
+  curRows=rows;
+  const bar=(k,o)=>`<span class="bar b-${k}${o.s?' s':''}${o.e?' e':''}">${o.label||''}</span>`;
   let h='';
   for(let i=0;i<rows*7;i++){
     const dt=new Date(y,mo,1-first.getDay()+i);
@@ -350,7 +334,7 @@ function render(dir){
     if(mk.fert)x+=bar('fert',mk.fert);
     if(pi&&pi.type==='brk'){
       const nx=addDays(d,1);
-      x+=bar('brk',{s:pi.n===1,e:pi.n===7||S.pill.starts.includes(nx)||S.pill.stops.includes(nx)});
+      x+=bar('brk',{s:pi.n===1,e:pi.n===7||S.pill.starts.includes(nx)||S.pill.stops.includes(nx),label:pi.n===1?'휴약':''});
     }
     if(pi&&pi.type==='on')x+=`<span class="pn${S.pill.taken[d]?' ok':''}">${pi.n}</span>`;
     let ic='';
@@ -362,38 +346,8 @@ function render(dir){
     h+=`<div class="${cls}" data-d="${d}">${x}</div>`;
   }
   const g=$('#grid');g.innerHTML=h;
+  fitCells();
   if(dir){g.classList.remove('anim-l','anim-r');void g.offsetWidth;g.classList.add('anim-'+dir)}
-  renderSummary();renderLegend();
-}
-
-function renderSummary(){
-  const st=stats(),pi=pillInfo(TODAY);
-  const cur=S.periods.find(p=>TODAY>=p.start&&TODAY<=p.end);
-  let sub='',big='',tags=[],extra='';
-  if(cur){sub='오늘';big=`생리 ${diff(TODAY,cur.start)+1}일차`}
-  else if(pi){sub='경구피임약';big=pi.type==='on'?`복용 ${pi.n}일차`:`휴약기 ${pi.n}일차`}
-  else if(st.last){
-    const P=addDays(st.last.start,st.cycle),dd=diff(P,TODAY);
-    sub=`다음 생리 예정 ${fmtLong(P)}`;
-    big=dd>0?`D-${dd}`:dd===0?'오늘 예정일':`예정일 ${-dd}일 지남`;
-  }else{big='날짜를 눌러 기록을 시작해보세요'}
-  if(st.last){
-    if(!hidePred(TODAY)){
-      let ov=addDays(st.last.start,st.cycle-14);
-      while(ov<TODAY)ov=addDays(ov,st.cycle);
-      tags.push(`배란 예정 ${fmt(ov)}`);
-    }else tags.push('피임약 복용 중 · 배란 예측 숨김');
-    tags.push(`평균 주기 ${st.cycle}일`,`평균 기간 ${st.plen}일`);
-  }
-  if(pi){
-    if(pi.type==='on'){
-      const t=S.pill.taken[TODAY];
-      extra=`<div class="sub" style="margin-top:14px">피임약 ${pi.n}/21일차 · 휴약기까지 ${21-pi.n}일</div>
-      <button class="pillbtn${t?' done':''}" data-a="todaypill">${t?'✓ 오늘 복용 완료':'오늘 피임약 복용 체크'}</button>`;
-    }else extra=`<div class="sub" style="margin-top:14px">휴약기 ${pi.n}/7일차 · 새 팩 1일차 ${fmtLong(addDays(TODAY,8-pi.n))}</div>`;
-  }
-  $('#summary').innerHTML=`<div class="sub">${sub}</div><div class="big"${big.length>12?' style="font-size:18px"':''}>${big}</div>
-    ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}${extra}`;
 }
 
 /* ---------- 날짜 패널 ---------- */
@@ -509,9 +463,6 @@ function act(a,v){
       const n=new Date();
       view=v==='now'?new Date(n.getFullYear(),n.getMonth(),1):new Date(pickY,+v,1);
       return closeSheet();}
-    case 'todaypill':
-      if(P.taken[TODAY])delete P.taken[TODAY];else P.taken[TODAY]=true;
-      save();render();if(sheetMode==='day')openDay(sel);return;
     case 'pill':if(P.taken[d])delete P.taken[d];else P.taken[d]=true;break;
     case 'start':uniqPush(P.starts,d);P.stops=P.stops.filter(x=>x!==d);P.taken[d]=true;break;
     case 'unstart':P.starts=P.starts.filter(x=>x!==d);break;
@@ -577,7 +528,6 @@ $('#title').onclick=openPicker;
 $('#btnSet').onclick=openSettings;
 $('#dim').onclick=closeSheet;
 $('#grid').onclick=e=>{const c=e.target.closest('.cell');if(c)openDay(c.dataset.d)};
-$('#summary').onclick=e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a)};
 $('#sheet').onclick=e=>{
   const b=e.target.closest('[data-a]');if(!b||!b.dataset.a)return;
   const s=b.dataset.a,i=s.indexOf('|');
@@ -622,12 +572,13 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1);
 });
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'){const t=ymd(new Date());if(t!==TODAY){TODAY=t;render()}}
+  if(document.visibilityState==='visible'){const t=ymd(new Date());if(t!==TODAY){TODAY=t;render()}else fitCells()}
 });
+window.addEventListener('resize',fitCells);
+window.addEventListener('orientationchange',()=>setTimeout(fitCells,300));
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-// 연결이 오래 걸리면 이 기기 기록으로 계속할 수 있게
 setTimeout(()=>{
   if(!window.cloudReady&&!$('#auth').classList.contains('hide')){
     $('#authLoading').innerHTML='연결이 원활하지 않아요.<br><button class="lnk" onclick="document.getElementById(\'auth\').classList.add(\'hide\')">이 기기 기록으로 계속하기</button>';
